@@ -65,8 +65,6 @@ namespace ConsoleApplication1
 
                 this.index++;
 
-                //TODO: mat. operace
-
                 stateVar.Expression = this.ParseExpression();
                 result = stateVar;
             }
@@ -211,33 +209,18 @@ namespace ConsoleApplication1
                         logger.Log("expected ;, got EOF", Logger.Type.ERROR);
                         throw new System.Exception("expected ;, got EOF");
                     }
-                    if (this.tokens[this.index].Type != TokenType.MATHOPERATOR)
+
+                    if (this.tokens[this.index].Type == TokenType.NUMBER)
                     {
-                        logger.Log("expected math operator, got " + this.tokens[this.index].Type.ToString(), Logger.Type.ERROR);
-                        throw new System.Exception("expected math operator, got " + this.tokens[this.index].Type.ToString());
+                        mathExpressionList.AddLast(new ExpressionIntLiteral((int)((TokenNumber)this.tokens[this.index++]).Data));
                     }
-                    else
+                    else if (this.tokens[this.index].Type == TokenType.KEYWORD)
+                    {
+                        mathExpressionList.AddLast(new ExpressionVariable((String)((TokenWord)this.tokens[this.index++]).Data));
+                    }
+                    else if (this.tokens[this.index].Type == TokenType.MATHOPERATOR)
                     {
                         mathExpressionList.AddLast(new ExpressionMathOperator((MathOperators)((TokenSpecial)this.tokens[this.index++]).Data));
-                    }
-                    if (this.tokens[this.index].Type != TokenType.NUMBER || this.tokens[this.index].Type != TokenType.KEYWORD)
-                    {
-                        if (this.tokens[this.index].Type == TokenType.NUMBER)
-                        {
-                            mathExpressionList.AddLast(new ExpressionIntLiteral((int)((TokenNumber)this.tokens[this.index++]).Data));
-                        }
-                        else if(this.tokens[this.index].Type == TokenType.KEYWORD)
-                        {
-                            mathExpressionList.AddLast(new ExpressionVariable((String)((TokenWord)this.tokens[this.index++]).Data));
-                        }
-                        else if (this.tokens[this.index].Type == TokenType.MATHOPERATOR)
-                        {
-                            mathExpressionList.AddLast(new ExpressionMathOperator((MathOperators)((TokenSpecial)this.tokens[this.index++]).Data));
-                        }
-                    }
-                    else
-                    {
-                        throw new System.Exception("expected number or keyword, got " + this.tokens[this.index].Type.ToString());
                     }
                 }
                 logger.Log(mathExpressionList.ToString());
