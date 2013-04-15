@@ -188,16 +188,6 @@ namespace ConsoleApplication1
             { //matematický výraz
                 LinkedList<IExpression> mathExpressionList = new LinkedList<IExpression>();
 
-                if (this.tokens[this.index].Type == TokenType.NUMBER)
-                {
-                    mathExpressionList.AddLast(new ExpressionIntLiteral((int)((TokenNumber)this.tokens[this.index++]).Data));
-                }
-                else if (this.tokens[this.index].Type == TokenType.KEYWORD)
-                {
-                    mathExpressionList.AddLast(new ExpressionVariable((String)((TokenWord)this.tokens[this.index++]).Data));
-                }
-                logger.Log("Expression: " + ((this.tokens[this.index].Type == TokenType.NUMBER) ? TokenType.NUMBER.ToString() : TokenType.KEYWORD.ToString()));
-
                 while (true)
                 {
                     if (this.tokens[this.index].Type == TokenType.SPECIAL && ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) == SpecialChars.Semicolon)

@@ -4,13 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-// http://msdn.microsoft.com/en-us/magazine/cc136756.aspx
+using System.Windows.Forms;
 namespace ConsoleApplication1
 {
+    /// <summary>
+    /// http://msdn.microsoft.com/en-us/magazine/cc136756.aspx
+    /// </summary>
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+
             String FileName;
             Logger logger = Logger.GetInstance();
 
