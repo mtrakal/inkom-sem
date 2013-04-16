@@ -15,46 +15,52 @@ namespace ConsoleApplication1
         [STAThread]
         static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
-
-            String FileName;
             Logger logger = Logger.GetInstance();
 
-            //try
-            //{
-
-            if (args.Count() != 1)
+            if (args.Count() == 1)
             {
-                logger.Log("Chybi druhy parametr.\r\nPouziti: \"" + System.AppDomain.CurrentDomain.FriendlyName + " zdrojak.mt\"", Logger.Type.ERROR);
+                if (args[0].ToString() == "-GUI")
+                {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new MainForm());
+                }
+                else
+                {
+                    String FileName;
+                    try
+                    {
+                        logger.Log(args[0].ToString());
+                        FileName = args[0];
+                        TextReader tr = new StreamReader(FileName);
+                        Scanner scanner = new Scanner(tr);
+
+                        Parser parser = new Parser(scanner.Tokens);
+                        tr.Close();
+                        Compiler compiler = new Compiler(parser.Statement, Path.GetFileNameWithoutExtension(args[0]) + ".exe");
+
+
+                        //Console.ReadLine();
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Log(e.ToString(), Logger.Type.ERROR, e.Message);
+                        while (e.InnerException != null)
+                        {
+                            e = e.InnerException;
+                            logger.Log(e.ToString(), Logger.Type.ERROR, e.Message);
+                        }
+
+                        //Console.ReadLine();
+                    }
+                }
+            }
+            else
+            {
+                logger.Log("Chybi druhy parametr.\r\nPouziti: \"" + System.AppDomain.CurrentDomain.FriendlyName + " zdrojak.mt\"" +"\r\nZapnuti GUI: \"" + System.AppDomain.CurrentDomain.FriendlyName + " -GUI\"",Logger.Type.ERROR);
                 //Console.ReadLine();
                 return;
             }
-
-            logger.Log(args[0].ToString());
-            FileName = args[0];
-            TextReader tr = new StreamReader(FileName);
-            Scanner scanner = new Scanner(tr);
-
-            Parser parser = new Parser(scanner.Tokens);
-            tr.Close();
-            Compiler compiler = new Compiler(parser.Statement, Path.GetFileNameWithoutExtension(args[0]) + ".exe");
-
-
-            //Console.ReadLine();
-            //}
-            //catch (Exception e)
-            //{
-            //    logger.Log(e.ToString(), Logger.Type.ERROR, e.Message);
-            //    while (e.InnerException != null)
-            //    {
-            //        e = e.InnerException;
-            //        logger.Log(e.ToString(), Logger.Type.ERROR, e.Message);
-            //    }
-
-            //    //Console.ReadLine();
-            //}
         }
     }
 }

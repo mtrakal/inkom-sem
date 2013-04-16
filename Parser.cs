@@ -17,6 +17,10 @@ namespace ConsoleApplication1
         {
             this.tokens = tokens;
             logger.Log("Probiha parsovani souboru.", Logger.Type.INFO);
+            if (this.tokens == null || this.tokens.Count == 0)
+            {
+                logger.Log("Nebyly nalezeny zadne tokeny, ktere by se mely parsovat!", Logger.Type.ERROR);
+            }
             this.Statement = ParseStatement();
 
             if (this.index != this.tokens.Count)

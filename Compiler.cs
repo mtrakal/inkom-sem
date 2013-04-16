@@ -21,10 +21,14 @@ namespace ConsoleApplication1
         {
             logger.Log("Zacina kompilace souboru.", Logger.Type.INFO);
 
-            if (Path.GetFileName(moduleName) != moduleName)
+            if (Path.GetDirectoryName(moduleName) != null && Path.GetDirectoryName(moduleName) != String.Empty)
             {
-                throw new System.Exception("can only output into current directory!");
+                Directory.SetCurrentDirectory(Path.GetDirectoryName(moduleName));
             }
+            //if (Path.GetFileName(moduleName) != moduleName)
+            //{
+            //    throw new System.Exception("can only output into current directory!");
+            //}
 
             AssemblyName name = new AssemblyName(Path.GetFileNameWithoutExtension(moduleName));
             AssemblyBuilder asmb = System.AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Save);
@@ -44,7 +48,8 @@ namespace ConsoleApplication1
             typeBuilder.CreateType();
             modb.CreateGlobalFunctions();
             asmb.SetEntryPoint(methb);
-            asmb.Save(moduleName);
+
+            asmb.Save(Path.GetFileName(moduleName));
             this.symbolTable = null;
             this.il = null;
 
