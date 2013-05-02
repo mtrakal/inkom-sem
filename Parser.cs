@@ -19,127 +19,140 @@ namespace ConsoleApplication1
             logger.Log("Probiha parsovani souboru.", Logger.Type.INFO);
             if (this.tokens == null || this.tokens.Count == 0)
             {
-                logger.Log("Nebyly nalezeny zadne tokeny, ktere by se mely parsovat!", Logger.Type.ERROR);
+                throw new ParserException("Nebyly nalezeny zadne tokeny, ktere by se mely parsovat!");
             }
-            this.Statement = ParseStatement();
+            this.Statement = ParseStatement(TokenType.ERROR);
 
             if (this.index != this.tokens.Count)
             {
-                throw new System.Exception("expected EOF");
+                throw new ParserException("Ocekavan konec souboru!");
             }
+            logger.Log("Parsovani dokonceno.", Logger.Type.INFO);
         }
 
-        private IStatement ParseStatement()
+        private IStatement ParseStatement(TokenType beforeType)
         {
             IStatement result = null;
 
             if (this.index == this.tokens.Count)
             {
-                throw new System.Exception("expected statement, got EOF");
+                throw new ParserException("Ocekavan vyraz, obdrzen konec souboru.");
             }
 
-
-            if (this.tokens[this.index].Data.Equals("vypis"))
+            if (this.tokens[this.index].Type == TokenType.KEYWORD)
             {
-                this.index++;
-                StatementPrint sp = new StatementPrint();
-                sp.Expression = ParseExpression();
-                result = sp;
+                if (this.tokens[this.index].Data.Equals("vypis"))
+                {
+                    this.index++;
+                    StatementPrint sp = new StatementPrint();
+                    sp.Expression = ParseExpression();
+                    result = sp;
+                }
+                else if (this.tokens[this.index].Data.Equals("promenna"))
+                {
+                    this.index++;
+                    StatementVariable stateVar = new StatementVariable();
+
+                    if (this.index < this.tokens.Count && this.tokens[this.index].Type == TokenType.VARIABLE)
+                    {
+                        stateVar.Identificator = (string)this.tokens[this.index].Data;
+                    }
+                    else
+                    {
+                        throw new ParserException("Ocekavan identifikator za klicovym slovem 'promenna'");
+                    }
+
+                    this.index++;
+
+                    if (this.index == this.tokens.Count || this.tokens[this.index].Type != TokenType.SPECIAL)
+                    {
+                        throw new ParserException("Ocekavano '=' obdrzen typ: " + this.tokens[this.index].Type + ".");
+                    }
+                    if (((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
+                    {
+                        throw new ParserException("Ocekavano '=' za identifikatorem.");
+                    }
+
+                    this.index++;
+
+                    stateVar.Expression = this.ParseExpression();
+                    result = stateVar;
+                }
+                else if (this.tokens[this.index].Data.Equals("nactiInt"))
+                {
+                    this.index++;
+                    StatementReadInt readInt = new StatementReadInt();
+
+                    if (this.index < this.tokens.Count &&
+                        this.tokens[this.index].Data is string)
+                    {
+                        readInt.Identificator = (string)this.tokens[this.index++].Data;
+                        result = readInt;
+                    }
+                    else
+                    {
+                        throw new ParserException("Ocekavan identifikator za 'nactiInt'");
+                    }
+                }
+                else if (this.tokens[this.index].Data.Equals("pro"))
+                {
+                    TokenType tt = this.tokens[this.index].Type;
+                    this.index++;
+                    StatementForLoop forLoop = new StatementForLoop();
+
+                    if (this.index < this.tokens.Count && this.tokens[this.index].Data is string)
+                    {
+                        forLoop.Identificator = (string)this.tokens[this.index].Data;
+                    }
+                    else
+                    {
+                        throw new ParserException("Ocekavan identifikator za 'pro'");
+                    }
+
+                    this.index++;
+
+                    if (this.index == this.tokens.Count || ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
+                    {
+                        throw new ParserException("Za identifikatorem ocekavano '='");
+                    }
+
+                    this.index++;
+
+                    forLoop.From = this.ParseExpression();
+
+                    if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("do"))
+                    {
+                        throw new ParserException("Ocekavano 'do' za klicovym slovem 'pro'");
+                    }
+
+                    this.index++;
+
+                    forLoop.To = this.ParseExpression();
+
+                    if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("delej"))
+                    {
+                        throw new ParserException("Ocekavano 'delej' za klicovym slovem 'do'");
+                    }
+
+                    this.index++;
+
+                    forLoop.Body = this.ParseStatement(tt);
+                    result = forLoop;
+
+                    if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("konec"))
+                    {
+                        throw new ParserException("Neukonceny 'pro' cyklus, ocekavano klicove slovo 'konec' za telem cyklu.");
+                    }
+
+                    this.index++;
+                }
+                else if (this.tokens[this.index].Data is string)
+                {
+                    throw new ParserException("Nemelo by nastat :)");
+                }
+
             }
-            else if (this.tokens[this.index].Data.Equals("promenna"))
-            {
-                this.index++;
-                StatementVariable stateVar = new StatementVariable();
-
-                if (this.index < this.tokens.Count && this.tokens[this.index].Data is string)
-                {
-                    stateVar.Identificator = (string)this.tokens[this.index].Data;
-                }
-                else
-                {
-                    throw new System.Exception("expected variable name after 'promenna'");
-                }
-
-                this.index++;
-
-                if (this.index == this.tokens.Count || ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
-                {
-                    throw new System.Exception("expected = after 'promenna'");
-                }
-
-                this.index++;
-
-                stateVar.Expression = this.ParseExpression();
-                result = stateVar;
-            }
-            else if (this.tokens[this.index].Data.Equals("nactiInt"))
-            {
-                this.index++;
-                StatementReadInt readInt = new StatementReadInt();
-
-                if (this.index < this.tokens.Count &&
-                    this.tokens[this.index].Data is string)
-                {
-                    readInt.Identificator = (string)this.tokens[this.index++].Data;
-                    result = readInt;
-                }
-                else
-                {
-                    throw new System.Exception("expected variable name after 'nactiInt'");
-                }
-            }
-            else if (this.tokens[this.index].Data.Equals("pro"))
-            {
-                this.index++;
-                StatementForLoop forLoop = new StatementForLoop();
-
-                if (this.index < this.tokens.Count && this.tokens[this.index].Data is string)
-                {
-                    forLoop.Identificator = (string)this.tokens[this.index].Data;
-                }
-                else
-                {
-                    throw new System.Exception("expected identifier after 'pro'");
-                }
-
-                this.index++;
-
-                if (this.index == this.tokens.Count || ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
-                {
-                    throw new System.Exception("for missing '='");
-                }
-
-                this.index++;
-
-                forLoop.From = this.ParseExpression();
-
-                if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("do"))
-                {
-                    throw new System.Exception("expected 'do' after pro");
-                }
-
-                this.index++;
-
-                forLoop.To = this.ParseExpression();
-
-                if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("delej"))
-                {
-                    throw new System.Exception("expected 'do' after from expression in for loop");
-                }
-
-                this.index++;
-
-                forLoop.Body = this.ParseStatement();
-                result = forLoop;
-
-                if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("konec"))
-                {
-                    throw new System.Exception("unterminated 'for' loop body");
-                }
-
-                this.index++;
-            }
-            else if (this.tokens[this.index].Data is string)
+            else if (this.tokens[this.index].Data is string && (beforeType != TokenType.WORD))
             {
                 // assignment
 
@@ -149,7 +162,7 @@ namespace ConsoleApplication1
                 // FIXME očekáváno klíčové slovo, ale dostane string... nedokáže přetypovat
                 if (this.index == this.tokens.Count || ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
                 {
-                    throw new System.Exception("expected '='");
+                    throw new ParserException("ocekavano '='");
                 }
 
                 this.index++;
@@ -159,9 +172,13 @@ namespace ConsoleApplication1
             }
             else
             {
-                throw new System.Exception("parse error at token " + this.index + ": " + this.tokens[this.index]);
+                throw new ParserException("Bylo ocekavano kliceove slovo, nebo retezec. Chyba parsovani na tokenu " + this.index + ": " + this.tokens[this.index]);
             }
 
+            if (this.tokens[this.index].Type != TokenType.SPECIAL)
+            {
+                throw new ParserException("Byl ocekavan ukoncovaci znak ';'");
+            }
             if (this.index < this.tokens.Count && ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) == SpecialChars.Semicolon)
             {
                 this.index++;
@@ -170,7 +187,7 @@ namespace ConsoleApplication1
                 {
                     StatementSequence sequence = new StatementSequence();
                     sequence.First = result;
-                    sequence.Second = this.ParseStatement();
+                    sequence.Second = this.ParseStatement(this.tokens[this.index].Type);
                     if (sequence.Second == null)
                     {
                         return null;
@@ -185,13 +202,12 @@ namespace ConsoleApplication1
 
         private IExpression ParseExpression()
         {
-            if (this.index == this.tokens.Count)
+            if (this.index >= this.tokens.Count - 1)
             {
-                throw new System.Exception("expected expression, got EOF");
+                throw new ParserException("Za vyrazem ocekavan ukoncovaci znak ';', obdrzen konec souboru.");
             }
             else if (
-                ((this.tokens[this.index].Type == TokenType.NUMBER || this.tokens[this.index].Type == TokenType.VARIABLE)
-                && (this.tokens[this.index + 1].Type == TokenType.MATHOPERATOR))
+                ((this.tokens[this.index].Type == TokenType.NUMBER || this.tokens[this.index].Type == TokenType.VARIABLE) && (this.tokens[this.index + 1].Type == TokenType.MATHOPERATOR))
                 || this.tokens[this.index].Type == TokenType.MATHOPERATOR
                 )
             { //matematický výraz
@@ -199,16 +215,6 @@ namespace ConsoleApplication1
 
                 while (true)
                 {
-                    if (this.tokens[this.index].Type == TokenType.SPECIAL && ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) == SpecialChars.Semicolon)
-                    {
-                        break;
-                    }
-                    if (this.index == this.tokens.Count)
-                    {
-                        logger.Log("expected ;, got EOF", Logger.Type.ERROR);
-                        throw new System.Exception("expected ;, got EOF");
-                    }
-
                     if (this.tokens[this.index].Type == TokenType.NUMBER)
                     {
                         mathExpressionList.AddLast(new ExpressionIntLiteral((int)((TokenNumber)this.tokens[this.index++]).Data));
@@ -220,6 +226,15 @@ namespace ConsoleApplication1
                     else if (this.tokens[this.index].Type == TokenType.MATHOPERATOR)
                     {
                         mathExpressionList.AddLast(new ExpressionMathOperator((MathOperators)((TokenSpecial)this.tokens[this.index++]).Data));
+                    }
+
+                    if (this.tokens[this.index].Type == TokenType.SPECIAL && ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) == SpecialChars.Semicolon)
+                    {
+                        break;
+                    }
+                    if (this.index == this.tokens.Count)
+                    {
+                        throw new ParserException("Za vyrazem ocekavan ';', obdrzen konec souboru.");
                     }
                 }
                 ExpressionMath expressionMathOutput = new ExpressionMath(mathExpressionList);
@@ -243,9 +258,7 @@ namespace ConsoleApplication1
             }
             else
             {
-                logger.Log("Ocekavan retezec, cislo nebo promenna", Logger.Type.ERROR);
-                return null;
-                //throw new System.Exception("expected string literal, int literal, or variable");
+                throw new ParserException("Ocekavan retezec, cislo nebo promenna.");
             }
         }
 

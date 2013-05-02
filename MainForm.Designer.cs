@@ -42,6 +42,7 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.textBoxScanner = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.textBoxParser = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button3 = new System.Windows.Forms.Button();
@@ -58,12 +59,13 @@
             this.buttonClose = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.textBoxParser = new System.Windows.Forms.TextBox();
+            this.textBoxCompiler = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -223,8 +225,18 @@
             this.tabPage3.Text = "Parser";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // textBoxParser
+            // 
+            this.textBoxParser.Location = new System.Drawing.Point(6, 7);
+            this.textBoxParser.Multiline = true;
+            this.textBoxParser.Name = "textBoxParser";
+            this.textBoxParser.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxParser.Size = new System.Drawing.Size(668, 337);
+            this.textBoxParser.TabIndex = 2;
+            // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.textBoxCompiler);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
@@ -359,14 +371,14 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // textBoxParser
+            // textBoxCompiler
             // 
-            this.textBoxParser.Location = new System.Drawing.Point(6, 7);
-            this.textBoxParser.Multiline = true;
-            this.textBoxParser.Name = "textBoxParser";
-            this.textBoxParser.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxParser.Size = new System.Drawing.Size(668, 337);
-            this.textBoxParser.TabIndex = 2;
+            this.textBoxCompiler.Location = new System.Drawing.Point(6, 7);
+            this.textBoxCompiler.Multiline = true;
+            this.textBoxCompiler.Name = "textBoxCompiler";
+            this.textBoxCompiler.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxCompiler.Size = new System.Drawing.Size(668, 337);
+            this.textBoxCompiler.TabIndex = 3;
             // 
             // MainForm
             // 
@@ -389,6 +401,8 @@
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -430,5 +444,6 @@
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.TextBox textBoxScanner;
         private System.Windows.Forms.TextBox textBoxParser;
+        private System.Windows.Forms.TextBox textBoxCompiler;
     }
 }

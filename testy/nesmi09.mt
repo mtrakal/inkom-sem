@@ -1,0 +1,3 @@
+# eMTe
+promenna pocet = 0 + ;
+# tento scénáø není v kódu ošetøen a failne až na kompilátoru...

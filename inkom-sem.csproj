@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="BrokenCalculator.cs" />
     <Compile Include="Compiler.cs" />
+    <Compile Include="CompilerException.cs" />
     <Compile Include="ExpressionIntLiteral.cs" />
     <Compile Include="ExpressionMath.cs" />
     <Compile Include="ExpressionMathOperator.cs" />
@@ -93,7 +94,9 @@
     <Compile Include="MathOperators.cs" />
     <Compile Include="MathParserTK.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="ParserException.cs" />
     <Compile Include="reflectionEmit.cs" />
+    <Compile Include="ScannerException.cs" />
     <Compile Include="SpecialChars.cs" />
     <Compile Include="IStatement.cs" />
     <Compile Include="StatementAssign.cs" />

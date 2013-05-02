@@ -21,11 +21,10 @@ namespace ConsoleApplication1
             logger.Log("Probiha scanovani souboru.", Logger.Type.INFO);
             if (file.ReadLine() != "# eMTe")
             {
-                String s = "Soubor nema spravny format. Musi zacinat prvnim radkem: \"# eMTe\"!";
-                logger.Log(s, Logger.Type.ERROR);
-                throw new IOException(s);
+                throw new ScannerException("Soubor nema spravny format. Musi zacinat prvnim radkem: \"# eMTe\"!");
             }
             Scan();
+            logger.Log("Scanovani dokonceno.", Logger.Type.INFO);
 
         }
         private void Scan()
@@ -137,7 +136,6 @@ namespace ConsoleApplication1
                 {
                     break;
                 }
-
                 ch = (char)file.Peek();
             }
             if (Enum.GetNames(typeof(Keywords)).Contains(word.ToString().ToUpper()))
@@ -159,12 +157,12 @@ namespace ConsoleApplication1
         {
             // string literal
             StringBuilder word = new StringBuilder();
-
+            String s = "Neukonceny literal retezec!";
             file.Read(); // skip the '"'
 
             if (file.Peek() == -1)
             {
-                throw new System.Exception("unterminated string literal");
+                throw new ScannerException(s);
             }
 
             while ((ch = (char)file.Peek()) != '"')
@@ -174,7 +172,8 @@ namespace ConsoleApplication1
 
                 if (file.Peek() == -1)
                 {
-                    throw new System.Exception("unterminated string literal");
+                    s += " V okoli: " + word.ToString();
+                    throw new ScannerException(s);
                 }
             }
 
@@ -196,6 +195,8 @@ namespace ConsoleApplication1
 
                 if (file.Peek() == -1)
                 {
+                    // logger.Log("Chyba v cisle!", Logger.Type.ERROR);
+                    // throw new ScannerException("Chyba v cisle!");
                     break;
                 }
 

@@ -84,25 +84,25 @@ namespace ConsoleApplication1
         private void button6_Click(object sender, EventArgs e)
         {
             textBoxEditor.SelectionLength = 0;
-            textBoxEditor.SelectedText = "\r\nvypis PROMENNA;";
+            textBoxEditor.SelectedText = "\r\nvypis PROM;";
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             textBoxEditor.SelectionLength = 0;
-            textBoxEditor.SelectedText = "\r\npromenna PROMENNA=0;\r\nnactiInt PROMENNA;";
+            textBoxEditor.SelectedText = "\r\npromenna PROM=0;\r\nnactiInt PROM;";
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             textBoxEditor.SelectionLength = 0;
-            textBoxEditor.SelectedText = "\r\npromenna PROMENNA=0;";
+            textBoxEditor.SelectedText = "\r\npromenna PROM=\"TEXT\";";
         }
 
         private void button10_Click(object sender, EventArgs e)
         {
             textBoxEditor.SelectionLength = 0;
-            textBoxEditor.SelectedText = "\r\npromenna PROMENNA=\"TEXT\";";
+            textBoxEditor.SelectedText = "\r\npromenna PROM=0;";
         }
 
         private void button9_Click(object sender, EventArgs e)
@@ -119,12 +119,21 @@ konec;";
         private void button1_Click(object sender, EventArgs e)
         {
             tabControl1.SelectedIndex = 1;
+            textBoxScanner.Text = "";
             using (TextBoxStreamWriter tbsw = new TextBoxStreamWriter(textBoxScanner))
             {
                 Console.SetOut(tbsw);
                 using (TextReader reader = new StringReader(textBoxEditor.Text))
                 {
-                    scanner = new Scanner(reader);
+                    try
+                    {
+                        scanner = new Scanner(reader);
+                    }
+                    catch (ScannerException ex)
+                    {
+                        scanner = null;
+                        MessageBox.Show(ex.Message, "Chyba scannerovani", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -167,6 +176,7 @@ konec;";
         private void button2_Click(object sender, EventArgs e)
         {
             tabControl1.SelectedIndex = 2;
+            textBoxParser.Text = "";
             using (TextBoxStreamWriter tbsw = new TextBoxStreamWriter(textBoxParser))
             {
                 Console.SetOut(tbsw);
@@ -176,7 +186,14 @@ konec;";
                 }
                 else
                 {
-                    parser = new Parser(scanner.Tokens);
+                    try
+                    {
+                        parser = new Parser(scanner.Tokens);
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.Message, "Chyba v parsovani", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -184,7 +201,8 @@ konec;";
         private void button3_Click(object sender, EventArgs e)
         {
             tabControl1.SelectedIndex = 3;
-            using (TextBoxStreamWriter tbsw = new TextBoxStreamWriter(textBoxParser))
+            textBoxCompiler.Text = "";
+            using (TextBoxStreamWriter tbsw = new TextBoxStreamWriter(textBoxCompiler))
             {
                 Console.SetOut(tbsw);
                 if (parser == null)
@@ -193,11 +211,16 @@ konec;";
                 }
                 else
                 {
-                    saveFileDialog1.FileName = null;
-                    saveFileDialog1.Filter = "Executable file (*.exe)|*.exe";
-                    if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    try
                     {
-                        compiler = new Compiler(parser.Statement, saveFileDialog1.FileName);
+                        saveFileDialog1.FileName = null;
+                        saveFileDialog1.Filter = "Executable file (*.exe)|*.exe";
+                        if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        {
+                            compiler = new Compiler(parser.Statement, saveFileDialog1.FileName);
+                        }
+                    } catch (CompilerException ex) {
+                        MessageBox.Show(ex.Message, "Chyba kompilce", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
