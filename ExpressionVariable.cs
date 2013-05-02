@@ -17,5 +17,9 @@ namespace ConsoleApplication1
             this.Identificator = identificator;
         }
         public String Identificator { get; set; }
+        public override string ToString()
+        {
+            return Identificator;
+        }
     }
 }

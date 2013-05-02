@@ -146,6 +146,7 @@ namespace ConsoleApplication1
                 StatementAssign assign = new StatementAssign();
                 assign.Identificator = (string)this.tokens[this.index++].Data;
 
+                // FIXME očekáváno klíčové slovo, ale dostane string... nedokáže přetypovat
                 if (this.index == this.tokens.Count || ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
                 {
                     throw new System.Exception("expected '='");
@@ -170,11 +171,15 @@ namespace ConsoleApplication1
                     StatementSequence sequence = new StatementSequence();
                     sequence.First = result;
                     sequence.Second = this.ParseStatement();
+                    if (sequence.Second == null)
+                    {
+                        return null;
+                    }
                     result = sequence;
                 }
             }
 
-            logger.Log("Statement: " + result.ToString());
+            //logger.Log("Statement: " + result.ToString());
             return result;
         }
 
@@ -185,7 +190,7 @@ namespace ConsoleApplication1
                 throw new System.Exception("expected expression, got EOF");
             }
             else if (
-                ((this.tokens[this.index].Type == TokenType.NUMBER || this.tokens[this.index].Type == TokenType.KEYWORD)
+                ((this.tokens[this.index].Type == TokenType.NUMBER || this.tokens[this.index].Type == TokenType.VARIABLE)
                 && (this.tokens[this.index + 1].Type == TokenType.MATHOPERATOR))
                 || this.tokens[this.index].Type == TokenType.MATHOPERATOR
                 )
@@ -208,7 +213,7 @@ namespace ConsoleApplication1
                     {
                         mathExpressionList.AddLast(new ExpressionIntLiteral((int)((TokenNumber)this.tokens[this.index++]).Data));
                     }
-                    else if (this.tokens[this.index].Type == TokenType.KEYWORD)
+                    else if (this.tokens[this.index].Type == TokenType.VARIABLE)
                     {
                         mathExpressionList.AddLast(new ExpressionVariable((String)((TokenWord)this.tokens[this.index++]).Data));
                     }
@@ -217,29 +222,33 @@ namespace ConsoleApplication1
                         mathExpressionList.AddLast(new ExpressionMathOperator((MathOperators)((TokenSpecial)this.tokens[this.index++]).Data));
                     }
                 }
-                logger.Log(mathExpressionList.ToString());
-                return new ExpressionMath(mathExpressionList);
+                ExpressionMath expressionMathOutput = new ExpressionMath(mathExpressionList);
+                logger.Log("Expression: " + TokenType.NUMBER.ToString() + ": " + expressionMathOutput.ToString());
+                return expressionMathOutput;
             }
             else if (this.tokens[this.index].Type == TokenType.NUMBER)
             {
-                logger.Log("Expression: " + TokenType.NUMBER.ToString());
+                logger.Log("Expression: " + TokenType.NUMBER.ToString() + ": " + this.tokens[this.index].Data.ToString());
                 return new ExpressionIntLiteral((int)((TokenNumber)this.tokens[this.index++]).Data);
             }
             else if (this.tokens[this.index].Type == TokenType.WORD)
             {
-                logger.Log("Expression: " + TokenType.WORD.ToString());
+                logger.Log("Expression: " + TokenType.WORD.ToString() + ": " + this.tokens[this.index].Data.ToString());
                 return new ExpressionStringLiteral((String)((TokenWord)this.tokens[this.index++]).Data);
             }
-            else if (this.tokens[this.index].Type == TokenType.KEYWORD)
+            else if (this.tokens[this.index].Type == TokenType.VARIABLE)
             {
-                logger.Log("Expression: " + TokenType.KEYWORD.ToString());
+                logger.Log("Expression: " + TokenType.VARIABLE.ToString() + ": " + this.tokens[this.index].Data.ToString());
                 return new ExpressionVariable((String)((TokenWord)this.tokens[this.index++]).Data);
             }
             else
             {
-                throw new System.Exception("expected string literal, int literal, or variable");
+                logger.Log("Ocekavan retezec, cislo nebo promenna", Logger.Type.ERROR);
+                return null;
+                //throw new System.Exception("expected string literal, int literal, or variable");
             }
         }
+
         private IExpression ParseExpressionOLD()
         {
             if (this.index == this.tokens.Count)
@@ -310,7 +319,5 @@ namespace ConsoleApplication1
                 throw new System.Exception("expected string literal, int literal, or variable");
             }
         }
-
-
     }
 }

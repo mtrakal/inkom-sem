@@ -9,5 +9,9 @@ namespace ConsoleApplication1
     class StatementReadInt : IStatement
     {
         public String Identificator { get; set; }
+        public override string ToString()
+        {
+            return "nacteni cisla z klavesnice.";
+        }
     }
 }

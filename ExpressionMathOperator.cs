@@ -12,5 +12,9 @@ namespace ConsoleApplication1
         {
             Operator = @operator;
         }
+        public override string ToString()
+        {
+            return Operator.ToString();
+        }
     }
 }

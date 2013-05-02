@@ -9,5 +9,9 @@ namespace ConsoleApplication1
     class StatementPrint : IStatement
     {
         public IExpression Expression { get; set; }
+        public override string ToString()
+        {
+            return "vypis promenne, nebo textu.";
+        }
     }
 }

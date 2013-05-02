@@ -82,6 +82,7 @@
       <DependentUpon>Help.cs</DependentUpon>
     </Compile>
     <Compile Include="IExpression.cs" />
+    <Compile Include="Keywords.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

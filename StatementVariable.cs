@@ -10,5 +10,9 @@ namespace ConsoleApplication1
     {
         public string Identificator { get; set; }
         public IExpression Expression { get; set; }
+        public override string ToString()
+        {
+            return "promenna '" + Identificator.ToString() + "' s hodnotou '" + Expression.ToString() + "'";
+        }
     }
 }

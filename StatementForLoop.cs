@@ -12,5 +12,9 @@ namespace ConsoleApplication1
         public IExpression From { get; set; }
         public IExpression To { get; set; }
         public IStatement Body { get; set; }
+        public override string ToString()
+        {
+            return "cyklus";
+        }
     }
 }

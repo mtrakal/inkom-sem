@@ -17,5 +17,9 @@ namespace ConsoleApplication1
             this.Value = value;
         }
         public String Value { get; set; }
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }

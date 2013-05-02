@@ -140,8 +140,16 @@ namespace ConsoleApplication1
 
                 ch = (char)file.Peek();
             }
-            logger.Log("Keyword: " + word.ToString());
-            this.Tokens.Add(new TokenWord(word.ToString(), TokenType.KEYWORD));
+            if (Enum.GetNames(typeof(Keywords)).Contains(word.ToString().ToUpper()))
+            {
+                logger.Log("Keyword: " + word.ToString());
+                this.Tokens.Add(new TokenWord(word.ToString(), TokenType.KEYWORD));
+            }
+            else
+            {
+                logger.Log("Variable: " + word.ToString());
+                this.Tokens.Add(new TokenWord(word.ToString(), TokenType.VARIABLE));
+            }
         }
         /// <summary>
         /// Přečte řetězec textu a uloží ho

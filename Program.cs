@@ -21,9 +21,7 @@ namespace ConsoleApplication1
             {
                 if (args[0].ToString() == "-GUI")
                 {
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new MainForm());
+                    RunGUI();
                 }
                 else
                 {
@@ -58,9 +56,21 @@ namespace ConsoleApplication1
             else
             {
                 logger.Log("Chybi druhy parametr.\r\nPouziti: \"" + System.AppDomain.CurrentDomain.FriendlyName + " zdrojak.mt\"" +"\r\nZapnuti GUI: \"" + System.AppDomain.CurrentDomain.FriendlyName + " -GUI\"",Logger.Type.ERROR);
-                //Console.ReadLine();
+                Console.Write("Mám zapnout GUI? (Y/A nebo libovolná klávesa): ");
+                String choice = Console.ReadLine();
+                if (choice.ToUpper() == "A" || choice.ToUpper() == "Y")
+                {
+                    RunGUI();
+                }
                 return;
             }
+        }
+
+        private static void RunGUI()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
         }
     }
 }

@@ -13,5 +13,14 @@ namespace ConsoleApplication1
         {
             MathExpression = expression;
         }
+        public override string ToString()
+        {
+            StringBuilder resultString = new StringBuilder();
+            foreach (IExpression item in MathExpression)
+            {
+                resultString.Append(item.ToString()+" ");
+            }
+            return resultString.ToString();
+        }
     }
 }

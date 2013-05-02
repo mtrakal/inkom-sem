@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1
 {
-    enum TokenType
+    public enum Keywords
     {
-        WORD,
-        KEYWORD,
-        VARIABLE,
-        NUMBER,
-        SPECIAL,
-        MATHOPERATOR,
-        ERROR
+        PROMENNA,
+        NACTIINT,
+        VYPIS,
+        PRO,
+        DO,
+        DELEJ,
+        KONEC
     }
 }
