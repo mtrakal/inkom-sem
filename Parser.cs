@@ -36,7 +36,7 @@ namespace ConsoleApplication1
 
             if (this.index == this.tokens.Count)
             {
-                throw new ParserException("Ocekavan vyraz, obdrzen konec souboru.");
+                throw new ParserException("Ocekavan vyraz, obdrzen konec souboru." + GetCharsNearError(this.index));
             }
 
             if (this.tokens[this.index].Type == TokenType.KEYWORD)
@@ -59,18 +59,18 @@ namespace ConsoleApplication1
                     }
                     else
                     {
-                        throw new ParserException("Ocekavan identifikator za klicovym slovem 'promenna'");
+                        throw new ParserException("Ocekavan identifikator za klicovym slovem 'promenna'" + GetCharsNearError(this.index));
                     }
 
                     this.index++;
 
                     if (this.index == this.tokens.Count || this.tokens[this.index].Type != TokenType.SPECIAL)
                     {
-                        throw new ParserException("Ocekavano '=' obdrzen typ: " + this.tokens[this.index].Type + ".");
+                        throw new ParserException("Ocekavano '=' obdrzen typ: " + this.tokens[this.index].Type + "." + GetCharsNearError(this.index));
                     }
                     if (((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
                     {
-                        throw new ParserException("Ocekavano '=' za identifikatorem.");
+                        throw new ParserException("Ocekavano '=' za identifikatorem." + GetCharsNearError(this.index));
                     }
 
                     this.index++;
@@ -91,7 +91,7 @@ namespace ConsoleApplication1
                     }
                     else
                     {
-                        throw new ParserException("Ocekavan identifikator za 'nactiInt'");
+                        throw new ParserException("Ocekavan identifikator za 'nactiInt'" + GetCharsNearError(this.index));
                     }
                 }
                 else if (this.tokens[this.index].Data.Equals("pro"))
@@ -106,14 +106,14 @@ namespace ConsoleApplication1
                     }
                     else
                     {
-                        throw new ParserException("Ocekavan identifikator za 'pro'");
+                        throw new ParserException("Ocekavan identifikator za 'pro'" + GetCharsNearError(this.index));
                     }
 
                     this.index++;
 
                     if (this.index == this.tokens.Count || ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
                     {
-                        throw new ParserException("Za identifikatorem ocekavano '='");
+                        throw new ParserException("Za identifikatorem ocekavano '='" + GetCharsNearError(this.index));
                     }
 
                     this.index++;
@@ -122,7 +122,7 @@ namespace ConsoleApplication1
 
                     if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("do"))
                     {
-                        throw new ParserException("Ocekavano 'do' za klicovym slovem 'pro'");
+                        throw new ParserException("Ocekavano 'do' za klicovym slovem 'pro'" + GetCharsNearError(this.index));
                     }
 
                     this.index++;
@@ -131,7 +131,7 @@ namespace ConsoleApplication1
 
                     if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("delej"))
                     {
-                        throw new ParserException("Ocekavano 'delej' za klicovym slovem 'do'");
+                        throw new ParserException("Ocekavano 'delej' za klicovym slovem 'do'" + GetCharsNearError(this.index));
                     }
 
                     this.index++;
@@ -141,17 +141,22 @@ namespace ConsoleApplication1
 
                     if (this.index == this.tokens.Count || !this.tokens[this.index].Data.Equals("konec"))
                     {
-                        throw new ParserException("Neukonceny 'pro' cyklus, ocekavano klicove slovo 'konec' za telem cyklu.");
+                        throw new ParserException("Neukonceny 'pro' cyklus, ocekavano klicove slovo 'konec' za telem cyklu." + GetCharsNearError(this.index));
                     }
 
                     this.index++;
                 }
                 else if (this.tokens[this.index].Data is string)
                 {
-                    throw new ParserException("Nemelo by nastat :)");
+                    throw new ParserException("Nemelo by nastat :)" + GetCharsNearError(this.index));
                 }
 
             }
+            else if (beforeType == TokenType.ERROR)
+            {
+                throw new ParserException("ocekavano klicove slovo. Obdrzen datovy typ " + this.tokens[this.index].Type + GetCharsNearError(this.index));
+            }
+            //FIXME: nikdy se neprovede, asi zbytečný
             else if (this.tokens[this.index].Data is string && (beforeType != TokenType.WORD))
             {
                 // assignment
@@ -162,7 +167,7 @@ namespace ConsoleApplication1
                 // FIXME očekáváno klíčové slovo, ale dostane string... nedokáže přetypovat
                 if (this.index == this.tokens.Count || ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) != SpecialChars.Equals)
                 {
-                    throw new ParserException("ocekavano '='");
+                    throw new ParserException("ocekavano '='" + GetCharsNearError(this.index));
                 }
 
                 this.index++;
@@ -172,12 +177,12 @@ namespace ConsoleApplication1
             }
             else
             {
-                throw new ParserException("Bylo ocekavano kliceove slovo, nebo retezec. Chyba parsovani na tokenu " + this.index + ": " + this.tokens[this.index]);
+                throw new ParserException("Bylo ocekavano kliceove slovo, nebo retezec. Chyba parsovani na tokenu " + this.index + ": " + this.tokens[this.index] + GetCharsNearError(this.index));
             }
 
             if (this.tokens[this.index].Type != TokenType.SPECIAL)
             {
-                throw new ParserException("Byl ocekavan ukoncovaci znak ';'");
+                throw new ParserException("Byl ocekavan ukoncovaci znak ';'" + GetCharsNearError(this.index));
             }
             if (this.index < this.tokens.Count && ((SpecialChars)((TokenSpecial)this.tokens[this.index]).Data) == SpecialChars.Semicolon)
             {
@@ -200,11 +205,31 @@ namespace ConsoleApplication1
             return result;
         }
 
+        private String GetCharsNearError(int index)
+        {
+            StringBuilder sb = new StringBuilder("\r\nChyba v okoli: '");
+
+            for (int i = index - 10; i < index + 10; i++)
+            {
+                if (i < 0)
+                {
+                    continue;
+                }
+                if (i >= this.tokens.Count)
+                {
+                    break;
+                }
+                sb.Append(this.tokens[i].Data.ToString()).Append(" ");
+            }
+            sb.Append("'");
+            return sb.ToString();
+        }
+
         private IExpression ParseExpression()
         {
             if (this.index >= this.tokens.Count - 1)
             {
-                throw new ParserException("Za vyrazem ocekavan ukoncovaci znak ';', obdrzen konec souboru.");
+                throw new ParserException("Za vyrazem ocekavan ukoncovaci znak ';', obdrzen konec souboru." + GetCharsNearError(this.index));
             }
             else if (
                 ((this.tokens[this.index].Type == TokenType.NUMBER || this.tokens[this.index].Type == TokenType.VARIABLE) && (this.tokens[this.index + 1].Type == TokenType.MATHOPERATOR))
@@ -234,7 +259,7 @@ namespace ConsoleApplication1
                     }
                     if (this.index == this.tokens.Count)
                     {
-                        throw new ParserException("Za vyrazem ocekavan ';', obdrzen konec souboru.");
+                        throw new ParserException("Za vyrazem ocekavan ';', obdrzen konec souboru." + GetCharsNearError(this.index));
                     }
                 }
                 ExpressionMath expressionMathOutput = new ExpressionMath(mathExpressionList);
@@ -258,7 +283,7 @@ namespace ConsoleApplication1
             }
             else
             {
-                throw new ParserException("Ocekavan retezec, cislo nebo promenna.");
+                throw new ParserException("Ocekavan retezec, cislo nebo promenna." + GetCharsNearError(this.index));
             }
         }
 

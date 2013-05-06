@@ -20,5 +20,5 @@ inkom-eMTe aaa.mt
 inkom-eMTe op.mt
 inkom-eMTe op1.mt
 inkom-eMTe source.mt
-del *.exe
 pause
+del *.exe

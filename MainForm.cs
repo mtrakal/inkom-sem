@@ -190,7 +190,7 @@ konec;";
                     {
                         parser = new Parser(scanner.Tokens);
                     }
-                    catch (IOException ex)
+                    catch (ParserException ex)
                     {
                         MessageBox.Show(ex.Message, "Chyba v parsovani", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

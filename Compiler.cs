@@ -29,10 +29,9 @@ namespace ConsoleApplication1
             //{
             //    throw new System.Exception("can only output into current directory!");
             //}
-
             AssemblyName name = new AssemblyName(Path.GetFileNameWithoutExtension(moduleName));
             AssemblyBuilder asmb = System.AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Save);
-            ModuleBuilder modb = asmb.DefineDynamicModule(moduleName);
+            ModuleBuilder modb = asmb.DefineDynamicModule(Path.GetFileName(moduleName).ToString());
             TypeBuilder typeBuilder = modb.DefineType("Foo");
 
             MethodBuilder methb = typeBuilder.DefineMethod("Main", MethodAttributes.Static, typeof(void), System.Type.EmptyTypes);
@@ -48,7 +47,6 @@ namespace ConsoleApplication1
             typeBuilder.CreateType();
             modb.CreateGlobalFunctions();
             asmb.SetEntryPoint(methb);
-
             asmb.Save(Path.GetFileName(moduleName));
             this.symbolTable = null;
             this.il = null;
