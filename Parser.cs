@@ -150,7 +150,6 @@ namespace ConsoleApplication1
                 {
                     throw new ParserException("Nemelo by nastat :)" + GetCharsNearError(this.index));
                 }
-
             }
             else if (beforeType == TokenType.ERROR)
             {

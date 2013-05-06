@@ -25,10 +25,6 @@ namespace ConsoleApplication1
             {
                 Directory.SetCurrentDirectory(Path.GetDirectoryName(moduleName));
             }
-            //if (Path.GetFileName(moduleName) != moduleName)
-            //{
-            //    throw new System.Exception("can only output into current directory!");
-            //}
             AssemblyName name = new AssemblyName(Path.GetFileNameWithoutExtension(moduleName));
             AssemblyBuilder asmb = System.AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Save);
             ModuleBuilder modb = asmb.DefineDynamicModule(Path.GetFileName(moduleName).ToString());

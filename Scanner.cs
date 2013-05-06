@@ -97,7 +97,6 @@ namespace ConsoleApplication1
                     file.Read();
                     this.Tokens.Add(new TokenSpecial(SpecialChars.Equals));
                     break;
-
                 case ';':
                     file.Read();
                     this.Tokens.Add(new TokenSpecial(SpecialChars.Semicolon));
