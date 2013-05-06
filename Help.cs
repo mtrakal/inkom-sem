@@ -21,5 +21,10 @@ namespace ConsoleApplication1
         {
             Close();
         }
+
+        private void Help_Shown(object sender, EventArgs e)
+        {
+            textBox1.SelectionLength = 0;
+        }
     }
 }

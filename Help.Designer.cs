@@ -69,6 +69,7 @@
             this.Controls.Add(this.textBox1);
             this.Name = "Help";
             this.Text = "Nápověda";
+            this.Shown += new System.EventHandler(this.Help_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -209,7 +209,7 @@ namespace ConsoleApplication1
         {
             StringBuilder sb = new StringBuilder("\r\nChyba v okoli: '");
 
-            for (int i = index - 10; i < index + 10; i++)
+            for (int i = index - 10; i < index; i++)
             {
                 if (i < 0)
                 {
